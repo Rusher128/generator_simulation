@@ -1,340 +1,366 @@
-
-</ html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3 Generator Power Simulation</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generator Power Simulation</title>
 
-<style>
-  * { box-sizing: border-box; }
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-  body {
-    margin: 0;
-    padding: 24px;
-    background: #050505;
-    color: white;
-    font-family: Arial, sans-serif;
-  }
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #050505;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
 
-  .dashboard {
-    max-width: 1000px;
-    margin: auto;
-  }
+    .dashboard {
+      max-width: 1000px;
+      margin: auto;
+    }
 
-  h1 { text-align: center; }
+    h1 {
+      text-align: center;
+      font-size: 30px;
+    }
 
-  .subtitle {
-    text-align: center;
-    color: #999;
-    margin-bottom: 28px;
-  }
+    .subtitle {
+      text-align: center;
+      color: #999999;
+      margin-bottom: 28px;
+    }
 
-  .total-panel, .generator, .status-panel {
-    background: #111;
-    border: 1px solid #303030;
-    border-radius: 14px;
-    padding: 22px;
-  }
+    .panel, .generator {
+      background: #111111;
+      border: 1px solid #303030;
+      border-radius: 14px;
+      padding: 22px;
+    }
 
-  .total-panel {
-    text-align: center;
-    margin-bottom: 20px;
-  }
+    .panel {
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-  .total-power {
-    font-size: clamp(36px, 7vw, 58px);
-    font-weight: bold;
-    color: #00e5a0;
-  }
+    .total-power {
+      font-size: clamp(36px, 7vw, 58px);
+      font-weight: bold;
+      color: #00e5a0;
+      margin: 12px 0;
+    }
 
-  .total-percent {
-    color: #aaa;
-    margin-top: 8px;
-  }
+    .total-percent {
+      color: #aaaaaa;
+    }
 
-  .generators {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-  }
+    .generators {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
 
-  .generator h2 { margin-top: 0; }
+    .generator h2 {
+      margin-top: 0;
+    }
 
-  .power {
-    font-size: clamp(24px, 4vw, 34px);
-    font-weight: bold;
-    color: #00e5a0;
-  }
+    .power {
+      font-size: 32px;
+      font-weight: bold;
+      color: #00e5a0;
+    }
 
-  .percentage {
-    color: #aaa;
-    margin: 8px 0 18px;
-  }
+    .percentage {
+      color: #aaaaaa;
+      margin: 8px 0 18px;
+    }
 
-  .bar {
-    height: 10px;
-    border-radius: 10px;
-    background: #333;
-    overflow: hidden;
-  }
+    .bar {
+      height: 10px;
+      background: #333333;
+      border-radius: 10px;
+      overflow: hidden;
+    }
 
-  .fill {
-    width: 0%;
-    height: 100%;
-    background: #00e5a0;
-    transition: width .25s;
-  }
+    .fill {
+      width: 0%;
+      height: 100%;
+      background: #00e5a0;
+      transition: width 0.2s;
+    }
 
-  .status {
-    margin-top: 18px;
-    color: #aaa;
-    font-size: 14px;
-  }
+    .status {
+      margin-top: 18px;
+      font-size: 14px;
+    }
 
-  .running { color: #00e5a0; }
-  .waiting { color: #888; }
-  .danger { color: #ff4040 !important; }
-  .danger-fill { background: #ff4040 !important; }
+    .running {
+      color: #00e5a0;
+    }
 
-  .status-panel {
-    margin-top: 20px;
-    line-height: 1.8;
-  }
+    .waiting {
+      color: #888888;
+    }
 
-  .controls {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin: 22px 0;
-    flex-wrap: wrap;
-  }
+    .danger {
+      color: #ff3333 !important;
+    }
 
-  button {
-    padding: 13px 24px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 15px;
-  }
+    .danger-fill {
+      background: #ff3333 !important;
+    }
 
-  #start { background: #00e5a0; color: #000; }
-  #reset { background: #292929; color: white; }
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 24px 0;
+      flex-wrap: wrap;
+    }
 
-  button:disabled { opacity: .5; cursor: not-allowed; }
+    button {
+      padding: 13px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: bold;
+    }
 
-  .note {
-    text-align: center;
-    color: #777;
-    font-size: 12px;
-    margin-top: 20px;
-  }
+    #start {
+      background: #00e5a0;
+      color: #000000;
+    }
 
-  @media (max-width: 650px) {
-    .generators { grid-template-columns: 1fr; }
-  }
-</style>
+    #reset {
+      background: #292929;
+      color: #ffffff;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .events {
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+    }
+
+    .note {
+      text-align: center;
+      color: #777777;
+      font-size: 12px;
+      margin-top: 22px;
+    }
+
+    @media (max-width: 700px) {
+      .generators {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
-<div class="dashboard">
-  <h1>Power Generator Control</h1>
-  <p class="subtitle">Three-generator startup simulation</p>
+  <main class="dashboard">
+    <h1>Generator Power Control</h1>
+    <p class="subtitle">Three-generator simulation system</p>
 
-  <section class="total-panel">
-    <div style="color:#aaa">TOTAL POWER OUTPUT</div>
-    <div class="total-power" id="totalPower">0 kW</div>
-    <div class="total-percent" id="totalPercent">0% of 1,800 kW</div>
-    <div class="bar" style="margin-top:20px">
-      <div class="fill" id="totalBar"></div>
+    <section class="panel">
+      <div>TOTAL POWER OUTPUT</div>
+      <div class="total-power" id="totalPower">0 kW</div>
+      <div class="total-percent" id="totalPercent">
+        0% of 1,800 kW
+      </div>
+
+      <div class="bar" style="margin-top: 20px">
+        <div class="fill" id="totalBar"></div>
+      </div>
+    </section>
+
+    <section class="generators">
+      <article class="generator">
+        <h2>Generator G1</h2>
+        <div class="power" id="power1">0 kW</div>
+        <div class="percentage" id="percent1">0%</div>
+        <div class="bar"><div class="fill" id="bar1"></div></div>
+        <div class="status waiting" id="status1">READY</div>
+      </article>
+
+      <article class="generator">
+        <h2>Generator G2</h2>
+        <div class="power" id="power2">0 kW</div>
+        <div class="percentage" id="percent2">0%</div>
+        <div class="bar"><div class="fill" id="bar2"></div></div>
+        <div class="status waiting" id="status2">STANDBY</div>
+      </article>
+
+      <article class="generator">
+        <h2>Generator G3</h2>
+        <div class="power" id="power3">0 kW</div>
+        <div class="percentage" id="percent3">0%</div>
+        <div class="bar"><div class="fill" id="bar3"></div></div>
+        <div class="status waiting" id="status3">STANDBY</div>
+      </article>
+    </section>
+
+    <div class="controls">
+      <button id="start" type="button">▶ Start Simulation</button>
+      <button id="reset" type="button">↻ Reset</button>
     </div>
-  </section>
 
-  <section class="generators">
-    <div class="generator">
-      <h2>Generator G1</h2>
-      <div class="power" id="power1">0 kW</div>
-      <div class="percentage" id="percent1">0% of 600 kW</div>
-      <div class="bar"><div class="fill" id="bar1"></div></div>
-      <div class="status waiting" id="status1">Waiting to start</div>
-    </div>
+    <section class="panel" style="text-align: left">
+      <strong>System Events</strong>
+      <div class="events" id="events" aria-live="polite">
+        System ready. Press Start Simulation.
+      </div>
+    </section>
 
-    <div class="generator">
-      <h2>Generator G2</h2>
-      <div class="power" id="power2">0 kW</div>
-      <div class="percentage" id="percent2">0% of 600 kW</div>
-      <div class="bar"><div class="fill" id="bar2"></div></div>
-      <div class="status waiting" id="status2">Waiting for G1</div>
-    </div>
+    <p class="note">
+      Educational simulation only. Not connected to real equipment.
+    </p>
+  </main>
 
-    <div class="generator">
-      <h2>Generator G3</h2>
-      <div class="power" id="power3">0 kW</div>
-      <div class="percentage" id="percent3">0% of 600 kW</div>
-      <div class="bar"><div class="fill" id="bar3"></div></div>
-      <div class="status waiting" id="status3">Waiting for G2</div>
-    </div>
-  </section>
+  <script>
+    "use strict";
 
-  <div class="controls">
-    <button id="start" onclick="startSimulation()">▶ Start Simulation</button>
-    <button id="reset" onclick="resetSimulation()">↻ Reset</button>
-  </div>
+    // System settings
+    const MAX_TOTAL = 1800;
+    const FINAL_TOTAL = 1620;
+    const GENERATOR_MAX = 600;
+    const G1_TRIGGER = 540;
+    const G2_INITIAL = 220;
 
-  <section class="status-panel">
-    <strong>System Events</strong>
-    <div id="log">System ready. Press Start Simulation.</div>
-  </section>
+    let power = [0, 0, 0];
+    let stage = 0;
+    let running = false;
+    let timer = null;
 
-  <p class="note">
-    Simulation only — not connected to real generators or electrical equipment.
-  </p>
-</div>
+    const $ = (id) => document.getElementById(id);
 
-<script>
-  const MAX_TOTAL = 1800;
-  const FINAL_TOTAL = 1620; // 90% of 1800 kW
-  const GENERATOR_MAX = 600;
-  const G1_TRIGGER = 540;
-  const G2_INITIAL = 220;
+    function updateDisplay() {
+      const total = power.reduce((sum, value) => sum + value, 0);
+      const totalPercent = total / MAX_TOTAL * 100;
 
-  let power = [0, 0, 0];
-  let running = false;
-  let timer = null;
-  let stage = 0;
+      $("totalPower").textContent = Math.round(total) + " kW";
+      $("totalPercent").textContent =
+        totalPercent.toFixed(1) + "% of 1,800 kW";
 
-  function updateDisplay() {
-    const total = power.reduce((sum, value) => sum + value, 0);
+      $("totalPower").classList.toggle("danger", totalPercent > 80);
+      $("totalBar").style.width =
+        Math.min(100, totalPercent) + "%";
+      $("totalBar").classList.toggle("danger-fill", totalPercent > 80);
 
-    document.getElementById("totalPower").textContent =
-      Math.round(total) + " kW";
+      power.forEach((kw, index) => {
+        const n = index + 1;
+        const percent = kw / GENERATOR_MAX * 100;
 
-    document.getElementById("totalPercent").textContent =
-      (total / MAX_TOTAL * 100).toFixed(1) + "% of 1,800 kW";
+        $("power" + n).textContent = Math.round(kw) + " kW";
+        $("percent" + n).textContent =
+          percent.toFixed(1) + "% of 600 kW";
 
-    document.getElementById("totalPower").classList.toggle(
-      "danger", total / MAX_TOTAL > 0.8
-    );
+        $("power" + n).classList.toggle("danger", percent > 80);
+        $("bar" + n).style.width = Math.min(100, percent) + "%";
+        $("bar" + n).classList.toggle("danger-fill", percent > 80);
 
-    document.getElementById("totalBar").style.width =
-      Math.min(100, total / MAX_TOTAL * 100) + "%";
+        const isActive = kw > 0;
+        $("status" + n).textContent =
+          isActive ? "● RUNNING" : "● STANDBY";
 
-    document.getElementById("totalBar").classList.toggle(
-      "danger-fill", total / MAX_TOTAL > 0.8
-    );
+        $("status" + n).className =
+          "status " + (isActive ? "running" : "waiting");
+      });
+    }
 
-    power.forEach((kw, i) => {
-      const n = i + 1;
-      const pct = kw / GENERATOR_MAX * 100;
+    function logEvent(message) {
+      const line = document.createElement("div");
+      line.textContent = message;
+      $("events").appendChild(line);
+    }
 
-      document.getElementById("power" + n).textContent =
-        Math.round(kw) + " kW";
+    function finishSimulation() {
+      clearInterval(timer);
+      timer = null;
+      running = false;
+      $("start").disabled = false;
+      logEvent("Target reached: " + FINAL_TOTAL + " kW (90%).");
+    }
 
-      document.getElementById("percent" + n).textContent =
-        pct.toFixed(1) + "% of 600 kW";
+    function startSimulation() {
+      if (running) return;
 
-      document.getElementById("power" + n).classList.toggle(
-        "danger", pct > 80
-      );
+      if (timer !== null) clearInterval(timer);
 
-      document.getElementById("bar" + n).style.width =
-        Math.min(100, pct) + "%";
+      running = true;
+      stage = 0;
+      power = [0, 0, 0];
+      $("start").disabled = true;
+      $("events").replaceChildren();
 
-      document.getElementById("bar" + n).classList.toggle(
-        "danger-fill", pct > 80
-      );
+      logEvent("G1 starting.");
 
-      const status = document.getElementById("status" + n);
+      timer = setInterval(() => {
+        if (stage === 0) {
+          // G1 rises to 540 kW.
+          power[0] = Math.min(G1_TRIGGER, power[0] + 30);
 
-      if (kw > 0) {
-        status.textContent = "● RUNNING";
-        status.className = "status running";
-      } else {
-        status.textContent = i === 0
-          ? "Waiting to start"
-          : "Waiting for G" + i;
-        status.className = "status waiting";
-      }
-    });
-  }
+          if (power[0] >= G1_TRIGGER) {
+            stage = 1;
+            power[1] = G2_INITIAL;
+            logEvent("G1 reached 540 kW. G2 starts at 220 kW.");
+          }
+        } else if (stage === 1) {
+          // G1 and G2 ramp to 540 kW each.
+          power[0] = Math.min(540, power[0] + 10);
+          power[1] = Math.min(540, power[1] + 20);
 
-  function log(message) {
-    document.getElementById("log").innerHTML +=
-      "<br>" + message;
-  }
+          if (power[0] >= 540 && power[1] >= 540) {
+            stage = 2;
+            power[2] = 220;
+            logEvent("G1 and G2 reached 540 kW each. G3 starts.");
+          }
+        } else if (stage === 2) {
+          // All three ramp to 540 kW each.
+          power[0] = Math.min(540, power[0] + 10);
+          power[1] = Math.min(540, power[1] + 10);
+          power[2] = Math.min(540, power[2] + 20);
 
-  function startSimulation() {
-    if (running) return;
-
-    running = true;
-    document.getElementById("start").disabled = true;
-    document.getElementById("log").textContent = "";
-    stage = 0;
-
-    log("G1 starting...");
-
-    timer = setInterval(() => {
-      // Stage 1: G1 ramps up to 540 kW.
-      if (stage === 0) {
-        power[0] = Math.min(540, power[0] + 30);
-
-        if (power[0] >= G1_TRIGGER) {
-          stage = 1;
-          log("G1 reached 540 kW. G2 starts up.");
-          power[1] = G2_INITIAL;
+          if (power.every(value => value >= 540)) {
+            power = [540, 540, 540];
+            updateDisplay();
+            finishSimulation();
+            return;
+          }
         }
-      }
 
-      // Stage 2: G2 starts at 220 kW.
-      // G1 and G2 then share the load equally as
-      // their combined output ramps toward 1,080 kW.
-      else if (stage === 1) {
-        const targetEach = 540;
-        power[0] = Math.max(0, power[0] - 10);
-        power[1] = Math.min(targetEach, power[1] + 20);
+        updateDisplay();
+      }, 200);
+    }
 
-        if (power[1] >= targetEach) {
-          power[0] = 540;
-          stage = 2;
-          log("G1 and G2 are each generating 540 kW. G3 starts up.");
-          power[2] = 220;
-        }
-      }
+    function resetSimulation() {
+      if (timer !== null) clearInterval(timer);
 
-      // Stage 3: all three ramp to 540 kW each.
-      else if (stage === 2) {
-        power[0] = Math.min(540, power[0] + 10);
-        power[1] = Math.min(540, power[1] + 10);
-        power[2] = Math.min(540, power[2] + 20);
+      timer = null;
+      running = false;
+      stage = 0;
+      power = [0, 0, 0];
 
-        if (power[0] >= 540 && power[1] >= 540 &&
-            power[2] >= 540) {
-          power = [540, 540, 540];
-          stage = 3;
-          log("Target reached: 1,620 kW (90% of 1,800 kW).");
-          clearInterval(timer);
-          running = false;
-          document.getElementById("start").disabled = false;
-        }
-      }
+      $("start").disabled = false;
+      $("events").textContent =
+        "System reset. Press Start Simulation.";
 
       updateDisplay();
-    }, 200);
-  }
+    }
 
-  function resetSimulation() {
-    clearInterval(timer);
-    running = false;
-    stage = 0;
-    power = [0, 0, 0];
-    document.getElementById("start").disabled = false;
-    document.getElementById("log").textContent =
-      "System reset. Press Start Simulation.";
+    $("start").addEventListener("click", startSimulation);
+    $("reset").addEventListener("click", resetSimulation);
+
     updateDisplay();
-  }
-
-  updateDisplay();
-</script>
+  </script>
 </body>
+ 
 </html>
